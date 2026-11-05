@@ -1,0 +1,19 @@
+# .NET
+bin/
+obj/
+*.user
+.vs/
+TestResults/
+
+# Node / front-end
+node_modules/
+dist/
+
+# Configuração local com senhas (use .env.example como modelo)
+.env
+
+# Editor / SO
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
