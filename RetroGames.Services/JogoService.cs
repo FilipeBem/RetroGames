@@ -10,10 +10,12 @@ public class JogoService : IJogoService
     private const int TamanhoPaginaMaximo = 100;
 
     private readonly IRepositorySet _repositorio;
+    private readonly IUsuarioAtualService _usuarioAtual;
 
-    public JogoService(IRepositorySet repositorio)
+    public JogoService(IRepositorySet repositorio, IUsuarioAtualService usuarioAtual)
     {
         _repositorio = repositorio;
+        _usuarioAtual = usuarioAtual;
     }
 
     public async Task<PaginaJogoServiceModel> ListarAsync(FiltroJogoServiceModel filtro)
@@ -37,9 +39,11 @@ public class JogoService : IJogoService
                 .ToList();
         }
 
-        // Jogos inativos só para o administrador: fica para a aula 6 (incluirInativos = false por ora).
+        // RN04: jogos inativos só aparecem para o administrador, mesmo que o visitante peça incluirInativos.
+        var incluirInativos = filtro.IncluirInativos && _usuarioAtual.EhAdministrador;
+
         var (jogos, total) = await _repositorio.Jogo.ListarAsync(
-            filtro.Busca, filtro.IdPlataforma, idsJogos, false, pagina, tamanhoPagina);
+            filtro.Busca, filtro.IdPlataforma, idsJogos, incluirInativos, pagina, tamanhoPagina);
 
         return new PaginaJogoServiceModel
         {
@@ -53,7 +57,9 @@ public class JogoService : IJogoService
     public async Task<JogoDetalheServiceModel> BuscarPorIdAsync(int id)
     {
         var jogo = await _repositorio.Jogo.BuscarPorIdAsync(id);
-        if (jogo is null)
+
+        // RN04: para quem não é administrador, jogo inativo é tratado como inexistente (404).
+        if (jogo is null || (!jogo.Ativo && !_usuarioAtual.EhAdministrador))
         {
             throw new BusinessRuleException(BusinessErrors.JogoNaoEncontrado);
         }
