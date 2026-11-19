@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
-    // Front-end e API na mesma origem: dispensa CORS (Espec. 1.3)
+    // Front-end e API na mesma origem para o navegador: dispensa CORS e permite cookie SameSite=Strict.
     proxy: {
       '/api': 'http://localhost:5080',
     },
