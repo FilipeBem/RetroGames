@@ -1,5 +1,6 @@
-using RetroGames.WebApi.ApiModels;
+using RetroGames.Model.Model;
 using RetroGames.Services;
+using RetroGames.WebApi.ApiModels;
 
 namespace RetroGames.WebApi.Mappers;
 
@@ -10,6 +11,7 @@ public static class JogoMapper
         Busca = request.Busca,
         IdPlataforma = request.IdPlataforma,
         IdGenero = request.IdGenero,
+        IncluirInativos = request.IncluirInativos,
         Pagina = request.Pagina,
         TamanhoPagina = request.TamanhoPagina,
     };
@@ -50,5 +52,31 @@ public static class JogoMapper
         TamanhoPagina = pagina.TamanhoPagina,
         TotalItens = pagina.Total,
         TotalPaginas = (int)Math.Ceiling(pagina.Total / (double)pagina.TamanhoPagina),
+    };
+
+    /// <summary>Entrada → modelo. Na inclusão, Ativo e DataCadastro são definidos pelo Service.</summary>
+    public static Jogo ParaModel(this InserirJogoRequestApiModel request) => new()
+    {
+        Nome = request.Nome,
+        Descricao = request.Descricao,
+        AnoLancamento = request.AnoLancamento,
+        Preco = request.Preco,
+        Estoque = request.Estoque,
+        IdPlataforma = request.IdPlataforma,
+        IdCondicaoJogo = request.IdCondicaoJogo,
+    };
+
+    /// <summary>Entrada → modelo. Na alteração, o id vem da rota.</summary>
+    public static Jogo ParaModel(this AlterarJogoRequestApiModel request, int id) => new()
+    {
+        Id = id,
+        Nome = request.Nome,
+        Descricao = request.Descricao,
+        AnoLancamento = request.AnoLancamento,
+        Preco = request.Preco,
+        Estoque = request.Estoque,
+        Ativo = request.Ativo,
+        IdPlataforma = request.IdPlataforma,
+        IdCondicaoJogo = request.IdCondicaoJogo,
     };
 }
